@@ -1,11 +1,18 @@
 import './css/styles.css';
 import PictureApiService from './component_js/pikcture_api_service'
+import Notiflix from 'notiflix';
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
 const refs = {
     searchFormEl: document.querySelector('#search-form'),
     cardContainer: document.querySelector('.gallery'),
     loadMoBtnEl: document.querySelector('.load-more')
 };
+
+// new SimpleLightbox('.gallery a', {
+//   captionsData: 'alt',
+// });
 
 const picturesApiService = new PictureApiService();
 
@@ -17,28 +24,41 @@ function hendleSearchSubmit(e) {
     picturesApiService.value = e.target.elements.searchQuery.value.trim();
 
     if (picturesApiService.value === '') {
-        console.log('Please enter, what exactly you want to find?');
+        Notiflix.Notify.warning('Please enter, what exactly you want to find?');
         return;
     }
     picturesApiService.resetPage();
-    picturesApiService.fetchPictures().then(card => {
-        if (card.length === 0) {
-            clearGalery()
-            console.log("Sorry, there are no images matching your search query. Please try again.");
+    picturesApiService.fetchPictures().then(({hits, totalHits }) => {
+        if (hits.length === 0) {
+            clearGalery();
+            Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
             return;
         }
+
         clearGalery()
-        renderMarkUp(card)
+        renderMarkUp(hits)
+        Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`)
+        
+    
+        if (totalHits < 40) {
+            loadMorButtonDisable()
+            return;
+        }
+
         loadMorButtonEnable()
-    })
+    }).catch('an error occurred, please try again later');
 }
 
 function hendleLoadMOClick() {
-    loadMorButtonDisable
+    loadMorButtonDisable()
     picturesApiService.fetchPictures().then(card => {
-        renderMarkUp(card)
+        renderMarkUp(card.hits)
         loadMorButtonEnable()
-    })
+        if (card.hits.length < 40) {
+            loadMorButtonDisable()
+            Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
+        }
+    }).catch('an error occurred, please try again later');
 }
 
 function renderMarkUp(data) {
@@ -55,20 +75,29 @@ function clearGalery() {
 function createMarkUp(array) {
  
     return array.map((picture) => {
+
+        const{tags, webformatURL, likes, views, comments, downloads, largeImageURL} = picture
         return `<div class="photo-card">
-  <img src="${picture.webformatURL}" alt="${picture.tags}" width="340px" height="220px" loading="lazy" />
-  <div class="info">
+  <a href="${largeImageURL}" class="link-img">
+  <img class="gallery__image"
+  src="${webformatURL}" 
+  alt="${tags}" 
+  width="340px" 
+  height="220px" 
+  loading="lazy" />
+  </a>
+<div class="info">
     <p class="info-item">
-      <b>Likes <br />${picture.likes}</b>
+      <b>Likes <br />${likes}</b>
     </p>
     <p class="info-item">
-      <b>Views <br />${picture.views}</b>
+      <b>Views <br />${views}</b>
     </p>
     <p class="info-item">
-      <b>Comments <br />${picture.comments}</b>
+      <b>Comments <br />${comments}</b>
     </p>
     <p class="info-item">
-      <b>Downloads <br />${picture.downloads}</b>
+      <b>Downloads <br />${downloads}</b>
     </p>
   </div>
 </div>`
@@ -78,6 +107,24 @@ function createMarkUp(array) {
 function loadMorButtonDisable() {
     refs.loadMoBtnEl.classList.add('hidden')
 }
+
 function loadMorButtonEnable() {
     refs.loadMoBtnEl.classList.remove('hidden')
 }
+
+
+
+// const { height: cardHeight } = document.querySelector(".gallery").firstElementChild.getBoundingClientRect();
+
+
+// window.scrollBy({
+//   top: cardHeight * 2,
+//   behavior: "smooth",
+// });
+
+// var nodeObj = document.querySelector('.button-node');
+
+// nodeObj.scrollIntoView({
+//    behavior: "smooth",
+//    block:    "start" 
+// });

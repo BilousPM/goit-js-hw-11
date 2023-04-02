@@ -8,16 +8,20 @@ export default class PictureApiService {
         this.inputFild = '';
         this.page = 1;
         this.per_page = 40;
-    }
+    };
 
-    fetchPictures() {
-        const url = `${BASE_URL}?${API_KEY}&q=${this.inputFild}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${this.per_page}&page=${this.page}`
+   async fetchPictures() {
+       try {
+            const url = `${BASE_URL}?${API_KEY}&q=${this.inputFild}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${this.per_page}&page=${this.page}`
         
-        return axios.get(url)
+        return await axios.get(url)
             .then(({data:{hits, totalHits}}) => {
                 this.page += 1;
                 return {hits, totalHits}
             })
+       } catch (respons) {
+           console.log('an error occurred, please try again later');
+        }
     }
 
     resetPage() {
@@ -31,7 +35,7 @@ export default class PictureApiService {
     set value(newValue) {
         this.inputFild = newValue;
     }
-}
+};
     
     
     

@@ -10,14 +10,16 @@ const refs = {
     loadMoBtnEl: document.querySelector('.load-more')
 };
 
-// new SimpleLightbox('.gallery a', {
-//   captionsData: 'alt',
-// });
+const gallery =  new SimpleLightbox('.gallery a', {
+         captionsData: 'alt',
+        });
 
 const picturesApiService = new PictureApiService();
 
 refs.searchFormEl.addEventListener('submit', hendleSearchSubmit);
 refs.loadMoBtnEl.addEventListener('click', hendleLoadMOClick);
+
+const per_page = picturesApiService.per_page;
 
 function hendleSearchSubmit(e) {
     e.preventDefault();
@@ -38,12 +40,14 @@ function hendleSearchSubmit(e) {
         clearGalery()
         renderMarkUp(hits)
         Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`)
-        
     
-        if (totalHits < 40) {
+        if (totalHits < per_page) {
             loadMorButtonDisable()
+            Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
             return;
         }
+
+        gallery.refresh();
 
         loadMorButtonEnable()
     }).catch('an error occurred, please try again later');
@@ -54,10 +58,13 @@ function hendleLoadMOClick() {
     picturesApiService.fetchPictures().then(card => {
         renderMarkUp(card.hits)
         loadMorButtonEnable()
-        if (card.hits.length < 40) {
+        if (card.hits.length < per_page) {
             loadMorButtonDisable()
             Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
         }
+
+        gallery.refresh();
+        
     }).catch('an error occurred, please try again later');
 }
 

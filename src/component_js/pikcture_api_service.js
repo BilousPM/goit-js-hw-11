@@ -7,10 +7,11 @@ export default class PictureApiService {
     constructor() {
         this.inputFild = '';
         this.page = 1;
+        this.per_page = 40;
     }
 
     fetchPictures() {
-        const url = `${BASE_URL}?${API_KEY}&q=${this.inputFild}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`
+        const url = `${BASE_URL}?${API_KEY}&q=${this.inputFild}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${this.per_page}&page=${this.page}`
         
         return axios.get(url)
             .then(({data:{hits, totalHits}}) => {

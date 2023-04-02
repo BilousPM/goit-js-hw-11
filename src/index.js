@@ -24,26 +24,27 @@ const per_page = picturesApiService.per_page;
 function hendleSearchSubmit(e) {
     e.preventDefault();
     picturesApiService.value = e.target.elements.searchQuery.value.trim();
+    loadMorButtonDisable()
 
     if (picturesApiService.value === '') {
         Notiflix.Notify.warning('Please enter, what exactly you want to find?');
         return;
     }
     picturesApiService.resetPage();
-    picturesApiService.fetchPictures().then(({hits, totalHits }) => {
+    clearGalery();
+    picturesApiService.fetchPictures().then(({ hits, totalHits }) => {
+        
         if (hits.length === 0) {
-            clearGalery();
             Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
             return;
         }
+        
 
-        clearGalery()
         renderMarkUp(hits)
         Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`)
         
     
         if (totalHits < per_page) {
-            loadMorButtonDisable()
             Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
             return;
         }
@@ -60,9 +61,9 @@ function hendleLoadMOClick() {
 
         const { height: cardHeight } = refs.cardContainer.firstElementChild.getBoundingClientRect();
         
-            window.scrollBy({
-          top: cardHeight * 2,
-          behavior: "smooth",
+        window.scrollBy({
+            top: cardHeight * 2,
+            behavior: "smooth",
         });
 
 

@@ -19,7 +19,7 @@ export default class PictureApiService {
                 this.page += 1;
                 return {hits, totalHits}
             })
-       } catch (respons) {
+       } catch (error) {
            console.log('an error occurred, please try again later');
         }
     }

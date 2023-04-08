@@ -3,6 +3,7 @@ import PictureApiService from './component_js/pikcture_api_service'
 import Notiflix from 'notiflix';
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
+// import InfiniteScroll from 'infinite-scroll';
 
 const gallery =  new SimpleLightbox('.gallery a', {
          captionsData: 'alt',
@@ -15,6 +16,8 @@ const refs = {
     cardContainer: document.querySelector('.gallery'),
     loadMoBtnEl: document.querySelector('.load-more')
 };
+
+// const infiniteScrol = new InfiniteScroll(refs.cardContainer, )
 
 refs.searchFormEl.addEventListener('submit', hendleSearchSubmit);
 refs.loadMoBtnEl.addEventListener('click', hendleLoadMOClick);
@@ -77,8 +80,8 @@ function hendleLoadMOClick() {
 };
 
 function renderMarkUp(data) {   
-const markUp = createMarkUp(data)
-refs.cardContainer.insertAdjacentHTML('beforeend', markUp)
+    const markUp = createMarkUp(data)
+    refs.cardContainer.insertAdjacentHTML('beforeend', markUp)
 };
 
 function clearGalery() {
@@ -120,5 +123,5 @@ function loadMorButtonDisable() {
 };
 
 function loadMorButtonEnable() {
-   refs.loadMoBtnEl.classList.remove('hidden')
+    refs.loadMoBtnEl.classList.remove('hidden')
 };
